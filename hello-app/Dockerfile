@@ -1,7 +1,7 @@
 FROM docker.io/maven AS build-env
 
 WORKDIR /app
-COPY hello-app/pom.xml ./
+COPY pom.xml ./
 
 # download dependencies as specified in pom.xml
 # building dependency layer early will speed up compile time when pom is unchanged

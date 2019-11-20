@@ -1,7 +1,7 @@
 # Build the app locally
 echo 'Building the app locally'
 cd hello-app
-./mvnw -Dmaven.test.skip=true clean package
+mvn -Dmaven.test.skip=true clean package
 cd ..
 
 # Build the Docker image with JDK 11 minimal
