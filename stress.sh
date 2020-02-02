@@ -1,1 +1,1 @@
-ab -n 1000 -c 10 http://localhost:8080/greetings
+ab -n 10000 -c 50 http://localhost:8080/greetings

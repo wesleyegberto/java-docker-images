@@ -1,0 +1,10 @@
+FROM adoptopenjdk/openjdk11-openj9:alpine-slim
+
+COPY hello-app/target/hello-app.jar /opt/app.jar
+
+# Pre-warming the docker
+# RUN sh -c 'java -Xshareclasses -Xscmx20M -jar /opt/app.jar --run_type=short &' ; sleep 15 ; ps aux | grep java | grep app.jar | awk '{print $1}' | xargs kill -l
+RUN sh -c 'java -Xshareclasses -Xscmx20M -jar /opt/app.jar --run_type=short &' ; sleep 15 ; killall java
+
+# Start JVM using pre-warmed cache
+ENTRYPOINT java -Xscmx50M -Xshareclasses -Xquickstart -jar /opt/app.jar
