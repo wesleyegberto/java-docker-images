@@ -53,6 +53,13 @@ Run Blazemeter container with Taurus tool: `sh run_stress_with_taurus.sh`
 
 [![Printscreen from test](./images/taurus-printscreen.png)](./images/taurus-printscreen.png)
 
+## TODO
+
+* [ ] Spring Boot splitting the lib and classes
+* [ ] Spring Boot native build
+* [ ] Spring Boot native with GraalVM
+* [ ] Fabric8 run-java.sh
+
 ## Links
 
 * [Spring Boot & JVM blog post](https://medium.com/@jean_sossmeier/spring-boot-jvm-1eea422be930)
