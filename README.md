@@ -5,8 +5,8 @@ Repository to test different Docker images.
 Project structure:
 
 * *hello-app*: Spring Boot app with simple REST controller.
-* *elk*: folder with ELK images.
-* *ab*: folder with ApacheBench image to stress all java images.
+* *images*: printscreens.
+* *taurus*: scenarios script to run Taurus stress test.
 
 ## Build the App
 
