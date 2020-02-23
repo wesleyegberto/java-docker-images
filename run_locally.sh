@@ -1,3 +1,2 @@
-cd hello-app
-
-./mvnw spring-boot:run
+sh build_app.sh
+java -jar hello-app/target/hello-app.jar

@@ -7,6 +7,7 @@ Project structure:
 * *hello-app*: Spring Boot app with simple REST controller.
 * *images*: printscreens.
 * *taurus*: scenarios script to run Taurus stress test.
+* *ab-test*: script to run a monitored Apache Bench test against a local process.
 
 ## Build the App
 
@@ -24,8 +25,10 @@ Images:
   * `docker build -t wesleyegberto/hello-app:minimal -f Dockerfile.openj9_11 .`
 * Open J9 Tuned (with CDS)
   * `docker build -t wesleyegberto/hello-app:minimal -f Dockerfile.openj9_11_tuned .`
-* GraalVM
-  * `docker build -t wesleyegberto/hello-app:minimal -f Dockerfile.graalvm_11 .`
+* GraalVM 19
+  * `docker build -t wesleyegberto/hello-app:minimal -f Dockerfile.graalvm_19_11 .`
+* GraalVM 20
+  * `docker build -t wesleyegberto/hello-app:minimal -f Dockerfile.graalvm_20_11 .`
 
 ## Stressing and Stats
 
@@ -64,4 +67,3 @@ Run Blazemeter container with Taurus tool: `sh run_stress_with_taurus.sh`
 
 * [Spring Boot & JVM blog post](https://medium.com/@jean_sossmeier/spring-boot-jvm-1eea422be930)
 * [Chris Newland's blog](https://www.chriswhocodes.com/)
-* [AB dashboard with Docker](https://github.com/naturalis/docker-ab)

@@ -10,7 +10,13 @@ execution:
   ramp-up: 15s
   hold-for: 10m
   # throughput: 100
-  scenario: graalvm-11
+  scenario: graalvm-19-11
+- concurrency: 50
+  # iterations: 100
+  ramp-up: 15s
+  hold-for: 10m
+  # throughput: 100
+  scenario: graalvm-20-11
 - concurrency: 50
   # iterations: 100
   ramp-up: 15s
@@ -28,7 +34,10 @@ scenarios:
   openjdk-11:
     requests:
     - http://openjdk-11:8080/greetings
-  graalvm-11:
+  graalvm-19-11:
+    requests:
+    - http://graalvm-11:8080/greetings
+  graalvm-20-11:
     requests:
     - http://graalvm-11:8080/greetings
   openj9-11:
