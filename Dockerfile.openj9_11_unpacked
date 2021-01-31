@@ -1,0 +1,25 @@
+FROM maven:3.6-jdk-11 as builder
+WORKDIR /app
+
+COPY hello-app/pom.xml .
+
+# download dependencies as specified in pom.xml
+# building dependency layer early will speed up compile time when pom is unchanged
+RUN mvn verify --fail-never
+
+COPY hello-app/src ./src
+
+RUN mvn package
+
+RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+
+FROM adoptopenjdk/openjdk11-openj9:alpine-slim
+WORKDIR /app
+
+ARG DEPENDENCY=/app/target/dependency
+
+COPY --from=builder ${DEPENDENCY}/BOOT-INF/lib lib/
+COPY --from=builder ${DEPENDENCY}/META-INF META-INF/
+COPY --from=builder ${DEPENDENCY}/BOOT-INF/classes .
+
+ENTRYPOINT ["java", "-cp", ".:./lib/*", "com.github.wesleyegberto.HelloApplication"]
