@@ -1,0 +1,30 @@
+FROM maven:3.6-jdk-11 as builder
+WORKDIR /app
+
+COPY hello-app/pom.xml .
+
+# download dependencies as specified in pom.xml
+# building dependency layer early will speed up compile time when pom is unchanged
+RUN mvn verify --fail-never
+
+COPY hello-app/src ./src
+
+RUN mvn package
+
+RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+
+FROM adoptopenjdk/openjdk11-openj9:alpine-slim
+WORKDIR /app
+
+ARG DEPENDENCY=/app/target/dependency
+
+COPY --from=builder ${DEPENDENCY}/BOOT-INF/lib lib/
+COPY --from=builder ${DEPENDENCY}/META-INF META-INF/
+COPY --from=builder ${DEPENDENCY}/BOOT-INF/classes .
+
+ENV JAVA_TOOL_OPTIONS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1 -Xshareclasses -Xquickstart -Djava.security.egd=file:/dev/./urandom"
+ENV SPRING_OPTIONS="--spring.config.location=classpath:/ --spring.jmx.enabled=false -Dspring.backgroundpreinitializer.ignore=true"
+
+RUN sh -c 'java $JAVA_TOOL_OPTIONS -Xscmx20M -cp .:./lib/* com.github.wesleyegberto.HelloApplication $SPRING_OPTIONS --run_type=short &' ; sleep 15 ; killall java
+
+CMD java $JAVA_TOOL_OPTIONS -cp .:./lib/* com.github.wesleyegberto.HelloApplication $SPRING_OPTIONS
