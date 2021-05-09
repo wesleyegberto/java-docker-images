@@ -25,10 +25,12 @@ Images:
   * `docker build -t wesleyegberto/hello-app:minimal -f Dockerfile.openj9_11 .`
 * Open J9 Tuned (with CDS)
   * `docker build -t wesleyegberto/hello-app:minimal -f Dockerfile.openj9_11_tuned .`
-* GraalVM 19
-  * `docker build -t wesleyegberto/hello-app:minimal -f Dockerfile.graalvm_19_11 .`
+* Open J9 Tuned (with CDS, unpacked JAR and lazy inicialization)
+  * `docker build -t wesleyegberto/hello-app:minimal -f Dockerfile.openj9_11_unpacked_lazy .`
 * GraalVM 20
-  * `docker build -t wesleyegberto/hello-app:minimal -f Dockerfile.graalvm_20_11 .`
+  * `docker build -t wesleyegberto/hello-app:minimal -f Dockerfile.graalvm_20 .`
+* GraalVM 21 - Native
+  * `docker build -t wesleyegberto/hello-app:minimal -f Dockerfile.graalvm_native .`
 
 ## Stressing and Stats
 
@@ -40,13 +42,11 @@ Monitoring docker stats: `docker stats`
 
 Here is a sample from stats output after some minutes of idle (on my machine :p).
 
-```sh
-CONTAINER ID        NAME                CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
-d383deca2050        graalvm_11          0.38%               346.6MiB / 1.952GiB   17.34%              928B / 0B           4.06MB / 0B         36
-89b83e2583ea        openj9_11_tuned     0.07%               81.95MiB / 1.952GiB   4.10%               928B / 0B           0B / 94.4MB         38
-a739331b6d2a        openj9_11           0.15%               93.84MiB / 1.952GiB   4.69%               1.02kB / 0B         987kB / 4.1kB       39
-94d1a178c2b2        openjdk_11          0.64%               187.7MiB / 1.952GiB   9.39%               1.11kB / 0B         1.56MB / 0B         37
-```
+![Docker Stats Idle](images/docker_stats_idle.png)
+
+Under stressing:
+
+![Docker Stats Stressing](images/docker_stats_stressing.png)
 
 ### Taurus
 
@@ -54,13 +54,11 @@ Run all containers: `build_and_run_all.sh`
 
 Run Blazemeter container with Taurus tool: `sh run_stress_with_taurus.sh`
 
-[![Printscreen from test](./images/taurus-printscreen.png)](./images/taurus-printscreen.png)
-
 ## TODO
 
 * [x] Spring Boot splitting the lib and classes
-* [ ] Spring Boot Native build
-* [ ] Spring Boot native with GraalVM
+* [x] Spring Boot Native build
+* [x] Spring Boot native with GraalVM
 * [ ] Fabric8 run-java.sh
 * [ ] Zulu VM docker image
 
@@ -68,3 +66,4 @@ Run Blazemeter container with Taurus tool: `sh run_stress_with_taurus.sh`
 
 * [Spring Boot & JVM blog post](https://medium.com/@jean_sossmeier/spring-boot-jvm-1eea422be930)
 * [Chris Newland's blog](https://www.chriswhocodes.com/)
+* [GraalVM Native Image Tips & Tricks](https://jamesward.com/2020/05/07/graalvm-native-image-tips-tricks/)

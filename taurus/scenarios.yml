@@ -5,24 +5,28 @@ execution:
   hold-for: 10m
   # throughput: 100
   scenario: openjdk-11
+
 - concurrency: 50
   # iterations: 100
   ramp-up: 15s
   hold-for: 10m
   # throughput: 100
-  scenario: graalvm-19-11
+  scenario: graalvm-21
+
 - concurrency: 50
   # iterations: 100
   ramp-up: 15s
   hold-for: 10m
   # throughput: 100
-  scenario: graalvm-20-11
+  scenario: graalvm-native
+
 - concurrency: 50
   # iterations: 100
   ramp-up: 15s
   hold-for: 10m
   # throughput: 100
   scenario: openj9-11
+
 - concurrency: 50
   # iterations: 100
   ramp-up: 15s
@@ -30,19 +34,29 @@ execution:
   # throughput: 100
   scenario: openj9-11-tuned
 
+- concurrency: 50
+  # iterations: 100
+  ramp-up: 15s
+  hold-for: 10m
+  # throughput: 100
+  scenario: openj9-11-unpacked-lazy
+
 scenarios:
   openjdk-11:
     requests:
     - http://openjdk-11:8080/greetings
-  graalvm-19-11:
+  graalvm-21:
     requests:
-    - http://graalvm-11:8080/greetings
-  graalvm-20-11:
+    - http://graalvm-21:8080/greetings
+  graalvm-native:
     requests:
-    - http://graalvm-11:8080/greetings
+    - http://graalvm-native:8080/greetings
   openj9-11:
     requests:
     - http://openj9-11:8080/greetings
   openj9-11-tuned:
     requests:
     - http://openj9-11-tuned:8080/greetings
+  openj9-11-unpacked-lazy:
+    requests:
+    - http://openj9-11-unpacked-lazy:8080/greetings

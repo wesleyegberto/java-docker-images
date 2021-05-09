@@ -1,4 +1,4 @@
-FROM oracle/graalvm-ce:19.3.1-java11
+FROM ghcr.io/graalvm/graalvm-ce:21.1.0
 
 COPY hello-app/target/hello-app.jar /opt/app.jar
 
