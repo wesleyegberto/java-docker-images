@@ -1,0 +1,29 @@
+FROM maven:3.9-ibm-semeru-21-jammy AS builder
+WORKDIR /app
+
+COPY hello-app-aot/pom.xml .
+RUN mvn verify --fail-never
+
+COPY hello-app-aot/src src/
+RUN mvn package -DskipTests
+
+RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+
+FROM bellsoft/liberica-openjre-debian:21-cds
+WORKDIR /app
+EXPOSE 8080
+
+ENV JAVA_OPTIONS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1 -Xshare:on -Djava.security.egd=file:/dev/./urandom"
+ENV SPRING_OPTIONS="-Dspring.config.location=classpath:/ -Dspring.jmx.enabled=false -Dspring.backgroundpreinitializer.ignore=true -Dspring.aot.enabled=true"
+# removed . at started because of CDS restrictions (non-empty path)
+ENV CLASSPATH=":./lib/*"
+
+ARG DEPENDENCY=/app/target/dependency
+COPY --from=builder ${DEPENDENCY}/BOOT-INF/lib lib/
+COPY --from=builder ${DEPENDENCY}/META-INF META-INF/
+COPY --from=builder ${DEPENDENCY}/BOOT-INF/classes .
+
+# training run
+RUN java $JAVA_OPTIONS $SPRING_OPTIONS -Dspring.context.exit=onRefresh -XX:ArchiveClassesAtExit=/tmp/application.jsa -cp $CLASSPATH com.github.wesleyegberto.HelloApplication
+
+ENTRYPOINT java $JAVA_OPTIONS $SPRING_OPTIONS -XX:SharedArchiveFile=/tmp/application.jsa -cp $CLASSPATH com.github.wesleyegberto.HelloApplication

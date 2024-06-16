@@ -1,65 +1,13 @@
-FROM ghcr.io/graalvm/graalvm-ce:java11-21.1.0 as builder
-
+# https://github.com/graalvm/graalvm-demos/blob/master/spring-native-image/Dockerfiles/Dockerfile
+FROM container-registry.oracle.com/graalvm/native-image:21-ol8 AS builder
 WORKDIR /app
 
-RUN gu install native-image
+COPY hello-app-native .
 
-# BEGIN PRE-REQUISITES FOR STATIC NATIVE IMAGES FOR GRAAL
-# SEE: https://github.com/oracle/graal/blob/master/substratevm/StaticImages.md
-ARG RESULT_LIB="/staticlibs"
+RUN ./mvnw --no-transfer-progress native:compile -Pnative -DskipTests
 
-RUN mkdir ${RESULT_LIB} && \
-    curl -L -o musl.tar.gz https://musl.libc.org/releases/musl-1.2.1.tar.gz && \
-    mkdir musl && tar -xvzf musl.tar.gz -C musl --strip-components 1 && cd musl && \
-    ./configure --disable-shared --prefix=${RESULT_LIB} && \
-    make && make install && \
-    cp /usr/lib/gcc/x86_64-redhat-linux/8/libstdc++.a ${RESULT_LIB}/lib/
+FROM container-registry.oracle.com/os/oraclelinux:9-slim
+EXPOSE 8080
 
-ENV PATH="$PATH:${RESULT_LIB}/bin"
-ENV CC="musl-gcc"
-
-RUN curl -L -o zlib.tar.gz https://zlib.net/zlib-1.2.11.tar.gz && \
-   mkdir zlib && tar -xvzf zlib.tar.gz -C zlib --strip-components 1 && cd zlib && \
-   ./configure --static --prefix=${RESULT_LIB} && \
-    make && make install
-#END PRE-REQUISITES FOR STATIC NATIVE IMAGES FOR GRAAL
-
-RUN curl -L -o xz.rpm https://www.rpmfind.net/linux/centos/8-stream/BaseOS/x86_64/os/Packages/xz-5.2.4-3.el8.x86_64.rpm
-RUN rpm -iv xz.rpm
-
-RUN curl -L -o upx-3.96-amd64_linux.tar.xz https://github.com/upx/upx/releases/download/v3.96/upx-3.96-amd64_linux.tar.xz
-RUN tar -xvf upx-3.96-amd64_linux.tar.xz
-
-COPY hello-app-native/.mvn /app/.mvn
-COPY hello-app-native/mvnw /app/mvnw
-COPY hello-app-native/pom.xml /app/pom.xml
-COPY hello-app-native/src /app/src
-
-# Spring Boot Application
-RUN ./mvnw -Pnative-image package
-
-# Java Application
-# RUN ./mvnw compile jar:jar
-# RUN native-image \
-#   --static \
-#   --libc=musl \
-#   --no-fallback \
-#   --no-server \
-#   --install-exit-handlers \
-#   --report-unsupported-elements-at-runtime
-#   --allow-incomplete-classpath
-#   -H:+ReportUnsupportedElementsAtRuntime
-#   -H:Name=hello-application \
-#   -cp /app/target/*.jar \
-#   com.github.wesleyegberto.HelloApplication
-# RUN upx-3.96-amd64_linux/upx -7 /app/hello-application
-
-FROM ubuntu
-
-# Spring Boot Application
-COPY --from=builder /app/target/com.github.wesleyegberto.helloapplication /app/com.github.wesleyegberto.helloapplication
-ENTRYPOINT [ "/app/com.github.wesleyegberto.helloapplication" ]
-
-# Java Application
-# COPY --from=builder /app/webapp /hello-application
-# ENTRYPOINT ["/hello-application"]
+COPY --from=builder /build/target/hello-app hello-app
+ENTRYPOINT ["/hello-app"]

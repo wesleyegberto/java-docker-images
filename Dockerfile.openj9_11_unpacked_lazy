@@ -1,4 +1,4 @@
-FROM maven:3.6-jdk-11 as builder
+FROM maven:3.6-jdk-11 AS builder
 WORKDIR /app
 
 COPY hello-app/pom.xml .
